@@ -2,24 +2,24 @@
 
 - name: Check existence of The Lounge systemd service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ the-lounge_identifier }}.service"
-  register: the-lounge_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ the_lounge_identifier }}.service"
+  register: the_lounge_service_stat
 
-- when: the-lounge_service_stat.stat.exists | bool
+- when: the_lounge_service_stat.stat.exists | bool
   block:
-    - name: Ensure the-lounge systemd service is stopped
+    - name: Ensure The Lounge systemd service is stopped
       ansible.builtin.service:
-        name: "{{ the-lounge_identifier }}"
+        name: "{{ the_lounge_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure The Lounge systemd service does not exists
+    - name: Ensure The Lounge systemd service does not exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ the-lounge_identifier }}.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ the_lounge_identifier }}.service"
         state: absent
 
     - name: Ensure The Lounge path doesn't exist
       ansible.builtin.file:
-        path: "{{ the-lounge_base_path }}"
+        path: "{{ the_lounge_base_path }}"
         state: absent

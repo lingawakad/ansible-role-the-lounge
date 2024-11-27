@@ -1,10 +1,10 @@
 ---
 
 - block:
-    - when: the-lounge_enabled | bool
+    - when: the_lounge_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: the-lounge_enabled | bool
+    - when: the_lounge_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
   tags:
     - setup-all
@@ -13,7 +13,7 @@
     - install-the-lounge
 
 - block:
-    - when: not the-lounge_enabled | bool
+    - when: not the_lounge_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
   tags:
     - setup-all

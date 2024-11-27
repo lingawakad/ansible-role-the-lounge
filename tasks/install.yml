@@ -5,29 +5,29 @@
     path: "{{ item }}"
     state: directory
     mode: 0700
-    owner: "{{ the-lounge_uid }}"
-    group: "{{ the-lounge_gid }}"
+    owner: "{{ the_lounge_uid }}"
+    group: "{{ the_lounge_gid }}"
   with_items:
-    - "{{ the-lounge_base_path }}"
-    - "{{ the-lounge_data_path }}"
+    - "{{ the_lounge_base_path }}"
+    - "{{ the_lounge_config_path }}"
 
 - name: Ensure The Lounge support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ the-lounge_base_path }}/{{ item }}"
+    dest: "{{ the_lounge_base_path }}/{{ item }}"
     mode: 0600
-    owner: "{{ the-lounge_uid }}"
-    group: "{{ the-lounge_gid }}"
+    owner: "{{ the_lounge_uid }}"
+    group: "{{ the_lounge_gid }}"
   with_items:
     - env
     - labels
 
 - name: Ensure The Lounge container image is pulled
   community.docker.docker_image:
-    name: "{{ the-lounge_container_image }}"
+    name: "{{ the_lounge_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ the-lounge_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else the-lounge_container_image_force_pull }}"
+    force_source: "{{ the_lounge_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else the_lounge_container_image_force_pull }}"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -35,10 +35,10 @@
 
 - name: Ensure The Lounge container network is created
   community.general.docker_network:
-    name: "{{ the-lounge_container_network }}"
+    name: "{{ the_lounge_container_network }}"
     driver: bridge
 
 - name: Ensure The Lounge systemd service is present
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/the-lounge.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ the-lounge_identifier }}.service"
+    src: "{{ role_path }}/templates/systemd/the_lounge.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ the_lounge_identifier }}.service"

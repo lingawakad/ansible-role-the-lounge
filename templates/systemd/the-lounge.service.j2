@@ -1,7 +1,7 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description=the-lounge ({{ the-lounge_identifier }})
-{% for service in the-lounge_systemd_required_services_list %}
+Description=The Lounge ({{ the_lounge_identifier }})
+{% for service in the_lounge_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
@@ -10,42 +10,38 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ the-lounge_identifier }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ the-lounge_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ the_lounge_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ the_lounge_identifier }} 2>/dev/null || true'
 
+{# We mount a tmpfs at /tmp to allow the_lounge migrations to run. #}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
-			--name={{ the-lounge_identifier }} \
+			--name={{ the_lounge_identifier }} \
 			--log-driver=none \
-			--network={{ the-lounge_container_network }} \
-			--user={{ the-lounge_uid }}:{{ the-lounge_gid }} \
-			--cap-drop=ALL \
-			--read-only \
-			--hostname={{ the-lounge_hostname }} \
-			{% if the-lounge_container_http_bind_port != '' %}
-			-p {{ the-lounge_container_http_bind_port }}:9000 \
-			{% endif %}
-			{% if the-lounge_container_identd_bind_port != '' %}
-			-p {{ the-lounge_container_identd_bind_port }}:9001\
-			{% endif %}
-			--env-file={{ the-lounge_env_path }} \
-			--label-file={{ the-lounge_base_path }}/labels \
-			--health-interval={{ the-lounge_container_health_interval }} \
-			--mount type=bind,src={{ the-lounge_data_path }},dst=/var/opt/thelounge \
-			{{ the-lounge_container_image }}
+			--network={{ the_lounge_container_network }} \
+			-p {{ the_lounge_container_http_bind_port }}:9000 \
+			-p {{ the_lounge_container_identd_http_bind_port }}:9001\
+			--env-file={{ the_lounge_env_path }} \
+			--label-file={{ the_lounge_base_path }}/labels \
+			--health-interval={{ the_lounge_container_health_interval }} \
+			--mount type=bind,src={{ the_lounge_config_path }},dst=/var/opt/thelounge \
+			{% for arg in the_lounge_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ the_lounge_container_image }}
 
-{% for network in the-lounge_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ the-lounge_identifier }}
+{% for network in the_lounge_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ the_lounge_identifier }}
 {% endfor %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ the-lounge_identifier }}
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ the_lounge_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ the-lounge_identifier }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ the-lounge_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ the_lounge_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ the_lounge_identifier }} 2>/dev/null || true'
 
 Restart=always
 RestartSec=30
-SyslogIdentifier={{ the-lounge_identifier }}
+SyslogIdentifier={{ the_lounge_identifier }}
 
 [Install]
 WantedBy=multi-user.target

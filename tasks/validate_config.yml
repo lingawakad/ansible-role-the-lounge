@@ -1,33 +1,34 @@
 ---
+
 - name: Fail if required The Lounge settings not defined
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`).
   when: "vars[item] == ''"
   with_items:
-    - the-lounge_identifier
-    - the-lounge_uid
-    - the-lounge_gid
-    - the-lounge_hostname
-    - the-lounge_path_prefix
-    - the-lounge_container_network
+    - the_lounge_identifier
+    - the_lounge_uid
+    - the_lounge_gid
+    - the_lounge_hostname
+    - the_lounge_path_prefix
+    - the_lounge_container_network
 
-- when: the-lounge_container_labels_traefik_enabled | bool
+- when: the_lounge_container_labels_traefik_enabled | bool
   block:
-    - name: Fail if required the-lounge Traefik settings not defined
+    - name: Fail if required The Lounge Traefik settings not defined
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
       when: "vars[item] == ''"
       with_items:
-        - the-lounge_container_labels_traefik_hostname
-        - the-lounge_container_labels_traefik_path_prefix
+        - the_lounge_container_labels_traefik_hostname
+        - the_lounge_container_labels_traefik_path_prefix
 
     # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
-    # Knowing that `the-lounge_container_labels_traefik_path_prefix` does not end with a slash
+    # Knowing that `the_lounge_container_labels_traefik_path_prefix` does not end with a slash
     # ensures we know how to set these routes up without having to do "does it end with a slash" checks elsewhere.
-    - name: Fail if the-lounge_container_labels_traefik_path_prefix ends with a slash
+    - name: Fail if the_lounge_container_labels_traefik_path_prefix ends with a slash
       ansible.builtin.fail:
         msg: >-
-          the-lounge_container_labels_traefik_path_prefix (`{{ the-lounge_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/the-lounge`).
-      when: "the-lounge_container_labels_traefik_path_prefix != '/' and the-lounge_container_labels_traefik_path_prefix[-1] == '/'"
+          the_lounge_container_labels_traefik_path_prefix (`{{ the_lounge_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/the_lounge`).
+      when: "the_lounge_container_labels_traefik_path_prefix != '/' and the_lounge_container_labels_traefik_path_prefix[-1] == '/'"
